@@ -34,5 +34,16 @@ public class BookRepository implements IBookRepository<Book>{
             return false;
         }
     }
+
+    @Override
+    public Boolean updateBook(Integer id, Book book) {
+        if(this.repository.containsKey(id)){
+            this.repository.put(id, book);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
     
 }

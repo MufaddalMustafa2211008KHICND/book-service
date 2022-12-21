@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,6 +39,16 @@ public class BookController {
         }
         else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book successfully not found!");
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateBook(@PathVariable int id, @RequestBody Book book) {
+        if(this.repository.updateBook(id, book)){
+            return ResponseEntity.ok().body("Book successfully updated!");
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book not found!");
         }
     }
 

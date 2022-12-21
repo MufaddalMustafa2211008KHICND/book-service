@@ -9,5 +9,5 @@ public interface IBookRepository<T> {
 
     public Boolean deleteBook(Integer id);
 
-    public void updateBook(Integer id, T t);
+    public Boolean updateBook(Integer id, T t);
 }
