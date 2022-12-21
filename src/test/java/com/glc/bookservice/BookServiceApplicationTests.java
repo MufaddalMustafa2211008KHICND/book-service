@@ -38,27 +38,28 @@ class BookServiceApplicationTests {
 	private JacksonTester<Collection<Book>> jsonBooks;
 
 	@BeforeEach
-	public void setUp(){
+	public void setUp() {
 		JacksonTester.initFields(this, new ObjectMapper());
 		mvc = MockMvcBuilders.standaloneSetup(bookController).build();
 	}
-
 
 	@Test
 	void contextLoads() {
 	}
 
-	//AC1:  When I enter the title, author, year of publication, and length of the book into the UI and hit submit, my book will saved to the list.
+	// AC1: When I enter the title, author, year of publication, and length of the
+	// book into the UI and hit submit, my book will saved to the list.
 	@Test
 	public void canCreateANewBook() throws Exception {
 		Book book = new Book(1, "The Hobbit", "J.R.R. Tolkein", 1937, 320);
 		mvc.perform(post("/books")
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(jsonBook.write(book).getJson()))
-			.andExpect(status().isOk());
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonBook.write(book).getJson()))
+				.andExpect(status().isOk());
 	}
 
-	//AC2:  When I click “View All Books” the application will display a list of all the books in my list.
+	// AC2: When I click “View All Books” the application will display a list of all
+	// the books in my list.
 	@Test
 	public void canGetAllBooks() throws Exception {
 		Book book1 = new Book(1, "The Hobbit", "J.R.R. Tolkein", 1937, 320);
@@ -69,11 +70,12 @@ class BookServiceApplicationTests {
 		when(bookRepository.getAllBooks()).thenReturn(books);
 		mvc.perform(get("/books/all")
 				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andExpect(content().json(jsonBooks.write(books).getJson()));
+				.andExpect(status().isOk())
+				.andExpect(content().json(jsonBooks.write(books).getJson()));
 	}
 
-	//AC3: When I click the checkbox next to a book, and then press the "Delete Book" button, the application will remove the book from my list
+	// AC3: When I click the checkbox next to a book, and then press the "Delete
+	// Book" button, the application will remove the book from my list
 	@Test
 	public void canDeleteBook() throws Exception {
 		// Book book = new Book(1, "Shikwa", "Hassan Haider", 2022, 1200);
@@ -82,4 +84,24 @@ class BookServiceApplicationTests {
 		mvc.perform(delete("/books/5"))
 			.andExpect(status().isOk());
 	}
+
+	// AC4: When I click the checkbox next to a book, and then press the “Update
+	// Book” button, the application will allow me to update any of the information
+	// about the book.
+	@Test
+	public void canUpdateBookInfo() throws Exception {
+		Book book = new Book(1, "Jawab Shikwa", "Hassan Haider", 2022, 1300);
+		mvc.perform(put("/books/1")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonBook.write(book).getJson()))
+				.andExpect(status().isOk())
+				.andExpect(content().json(jsonBook.write(book).getJson()));
+
+
+		mvc.perform(put("/books/2")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonBook.write(book).getJson()))
+				.andExpect(status().isNotFound())
+	}
+
 }
