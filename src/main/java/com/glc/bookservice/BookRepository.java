@@ -23,5 +23,16 @@ public class BookRepository implements IBookRepository<Book>{
     public Collection<Book> getAllBooks(){
         return repository.values();
     }
+
+    @Override
+    public Boolean deleteBook(Integer id){
+        if(this.repository.containsKey(id)){
+            this.repository.remove(id);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
     
 }

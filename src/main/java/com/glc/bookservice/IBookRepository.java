@@ -6,4 +6,6 @@ public interface IBookRepository<T> {
     public void save(T t);
 
     public Collection<T> getAllBooks();
+
+    public Boolean deleteBook(Integer id);
 }
