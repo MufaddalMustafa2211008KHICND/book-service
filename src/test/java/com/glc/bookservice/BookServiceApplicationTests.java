@@ -12,6 +12,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -82,7 +85,8 @@ class BookServiceApplicationTests {
 		// when(bookRepository.deleteBook(5)).thenReturn("Book successfully delete!");
 		when(bookRepository.deleteBook(5)).thenReturn(true);
 		mvc.perform(delete("/books/5"))
-			.andExpect(status().isOk());
+			.andExpect(status().isOk())
+			.andExpect(content().string("Book successfully deleted!"));
 	}
 
 	// AC4: When I click the checkbox next to a book, and then press the “Update
@@ -91,17 +95,17 @@ class BookServiceApplicationTests {
 	@Test
 	public void canUpdateBookInfo() throws Exception {
 		Book book = new Book(1, "Jawab Shikwa", "Hassan Haider", 2022, 1300);
-		when(bookRepository.updateBook(1, book)).thenReturn(true);
+		when(bookRepository.updateBook(eq(1), any())).thenReturn(true);
 		mvc.perform(put("/books/update/1")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(jsonBook.write(book).getJson()))
 				.andExpect(status().isOk());
 
-
-		// mvc.perform(put("/books/2")
-		// 		.contentType(MediaType.APPLICATION_JSON)
-		// 		.content(jsonBook.write(book).getJson()))
-		// 		.andExpect(status().isNotFound());
+		when(bookRepository.updateBook(eq(2), any())).thenReturn(false);
+		mvc.perform(put("/books/update/2")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonBook.write(book).getJson()))
+				.andExpect(status().isNotFound());
 	}
 
 }
