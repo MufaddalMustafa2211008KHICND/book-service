@@ -32,7 +32,7 @@ public class BookController {
         return this.repository.getAllBooks();
     }
 
-    @DeleteMapping("/{id}")  // (DELETE) https://localhost:8080/books/id
+    @DeleteMapping("/delete/{id}")  // (DELETE) https://localhost:8080/books/id
     public ResponseEntity<String> deleteBook(@PathVariable int id) {
         if(this.repository.deleteBook(id)){
             return ResponseEntity.status(HttpStatus.OK).body("Book successfully deleted!");
@@ -49,6 +49,17 @@ public class BookController {
         }
         else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book not found!");
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Book> getBookById(@PathVariable int id) {
+        Book book = this.repository.getBookById(id);
+        if(book.getId() == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(book);
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.OK).body(book);
         }
     }
 

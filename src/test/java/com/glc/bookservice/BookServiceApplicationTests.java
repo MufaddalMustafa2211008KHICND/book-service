@@ -82,7 +82,7 @@ class BookServiceApplicationTests {
 	@Test
 	public void canDeleteBook() throws Exception {
 		when(bookRepository.deleteBook(5)).thenReturn(true);
-		mvc.perform(delete("/books/5"))
+		mvc.perform(delete("/books/delete/5"))
 			.andExpect(status().isOk())
 			.andExpect(content().string("Book successfully deleted!"));
 	}
@@ -108,15 +108,23 @@ class BookServiceApplicationTests {
 				.andExpect(content().string("Book not found!"));
 	}
 
-	// AC5: When I click a particular book in the book list, the application will display details of that book.
+	// AC5: When I click a particular book in the book list, the application will
+	// display details of that book.
 	@Test
 	public void canGetBookById() throws Exception {
 		Book book = new Book(506, "Zakoota Jin", "Kamran Zahid", 2020, 56);
-		when(bookRepository.getBookById()).thenReturn(book);
+		when(bookRepository.getBookById(506)).thenReturn(book);
 		mvc.perform(get("/books/506")
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(content().json(jsonBook.write(book).getJson()));
+
+		Book emptyBook = new Book();
+		when(bookRepository.getBookById(6)).thenReturn(emptyBook);
+		mvc.perform(get("/books/6")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound())
+				.andExpect(content().json(jsonBook.write(emptyBook).getJson()));
 	}
 
 }

@@ -45,5 +45,15 @@ public class BookRepository implements IBookRepository<Book>{
             return false;
         }
     }
+
+    @Override
+    public Book getBookById(Integer id) {
+        if(this.repository.containsKey(id)){
+            return this.repository.get(id);
+        }
+        else {
+            return new Book();
+        }
+    }
     
 }
