@@ -92,7 +92,7 @@ class BookServiceApplicationTests {
 	public void canUpdateBookInfo() throws Exception {
 		Book book = new Book(1, "Jawab Shikwa", "Hassan Haider", 2022, 1300);
 		when(bookRepository.updateBook(1, book)).thenReturn(true);
-		mvc.perform(put("/books/1")
+		mvc.perform(put("/books/update/1")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(jsonBook.write(book).getJson()))
 				.andExpect(status().isOk());

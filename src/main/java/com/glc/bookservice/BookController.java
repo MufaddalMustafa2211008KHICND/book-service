@@ -3,6 +3,7 @@ package com.glc.bookservice;
 import java.util.Collection;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,10 +43,10 @@ public class BookController {
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<String> updateBook(@PathVariable int id, @RequestBody Book book) {
         if(this.repository.updateBook(id, book)){
-            return ResponseEntity.ok().body("Book successfully updated!");
+            return ResponseEntity.status(HttpStatus.OK).body("Book successfully updated!");
         }
         else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book not found!");
