@@ -81,8 +81,6 @@ class BookServiceApplicationTests {
 	// Book" button, the application will remove the book from my list
 	@Test
 	public void canDeleteBook() throws Exception {
-		// Book book = new Book(1, "Shikwa", "Hassan Haider", 2022, 1200);
-		// when(bookRepository.deleteBook(5)).thenReturn("Book successfully delete!");
 		when(bookRepository.deleteBook(5)).thenReturn(true);
 		mvc.perform(delete("/books/5"))
 			.andExpect(status().isOk())
@@ -99,13 +97,26 @@ class BookServiceApplicationTests {
 		mvc.perform(put("/books/update/1")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(jsonBook.write(book).getJson()))
-				.andExpect(status().isOk());
+				.andExpect(status().isOk())
+				.andExpect(content().string("Book successfully updated!"));
 
 		when(bookRepository.updateBook(eq(2), any())).thenReturn(false);
 		mvc.perform(put("/books/update/2")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(jsonBook.write(book).getJson()))
-				.andExpect(status().isNotFound());
+				.andExpect(status().isNotFound())
+				.andExpect(content().string("Book not found!"));
+	}
+
+	// AC5: When I click a particular book in the book list, the application will display details of that book.
+	@Test
+	public void canGetBookById() throws Exception {
+		Book book = new Book(506, "Zakoota Jin", "Kamran Zahid", 2020, 56);
+		when(bookRepository.getBookById()).thenReturn(book);
+		mvc.perform(get("/books/506")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(content().json(jsonBook.write(book).getJson()));
 	}
 
 }
