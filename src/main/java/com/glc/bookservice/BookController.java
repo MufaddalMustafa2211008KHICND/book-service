@@ -2,6 +2,9 @@ package com.glc.bookservice;
 
 import java.util.Collection;
 
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,9 +25,19 @@ public class BookController {
         this.repository = repository;
     }
 
+    @Autowired
+    private RabbitTemplate template;
+
     @PostMapping("")  // (POST) https://localhost:8080/books
-    public void createBook(@RequestBody Book book) {
-        this.repository.save(book);
+    public String publishMessage(@RequestBody Book book) {
+        template.convertAndSend("exchange_books", "please_collect_books", book);
+        return "Message Published "+book.getTitle();
+    }
+
+    @RabbitListener(queues = "sendBooks")
+    public void listener(Book book) {
+        repository.save(book);
+        System.out.println(book.getTitle());
     }
 
     @GetMapping("/all") // (GET) https://localhost:8080/books/all
