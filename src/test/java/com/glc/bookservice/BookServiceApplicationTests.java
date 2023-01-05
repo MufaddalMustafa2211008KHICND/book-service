@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -33,6 +36,9 @@ class BookServiceApplicationTests {
 
 	@Mock
 	private BookRepository bookRepository;
+
+	@Mock
+	private RabbitTemplate template;
 
 	@InjectMocks
 	private BookController bookController;
@@ -54,7 +60,7 @@ class BookServiceApplicationTests {
 	// book into the UI and hit submit, my book will saved to the list.
 	@Test
 	public void canCreateANewBook() throws Exception {
-		Book book = new Book(1, "The Hobbit", "J.R.R. Tolkein", 1937, 320);
+		Book book = new Book(1L, "The Hobbit", "J.R.R. Tolkein", 1937, 320);
 		mvc.perform(post("/books")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(jsonBook.write(book).getJson()))
@@ -65,12 +71,12 @@ class BookServiceApplicationTests {
 	// the books in my list.
 	@Test
 	public void canGetAllBooks() throws Exception {
-		Book book1 = new Book(1, "The Hobbit", "J.R.R. Tolkein", 1937, 320);
-		Book book2 = new Book(2, "It", "Stephen King", 1986, 1138);
-		Collection<Book> books = new ArrayList<Book>();
+		Book book1 = new Book(1L, "The Hobbit", "J.R.R. Tolkein", 1937, 320);
+		Book book2 = new Book(2L, "It", "Stephen King", 1986, 1138);
+		List<Book> books = new ArrayList<Book>();
 		books.add(book1);
 		books.add(book2);
-		when(bookRepository.getAllBooks()).thenReturn(books);
+		when(bookRepository.findAll()).thenReturn(books);
 		mvc.perform(get("/books/all")
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -81,7 +87,7 @@ class BookServiceApplicationTests {
 	// Book" button, the application will remove the book from my list
 	@Test
 	public void canDeleteBook() throws Exception {
-		when(bookRepository.deleteBook(5)).thenReturn(true);
+		when(bookRepository.existsById(5L)).thenReturn(true);
 		mvc.perform(delete("/books/delete/5"))
 			.andExpect(status().isOk())
 			.andExpect(content().string("Book successfully deleted!"));
@@ -92,15 +98,15 @@ class BookServiceApplicationTests {
 	// about the book.
 	@Test
 	public void canUpdateBookInfo() throws Exception {
-		Book book = new Book(1, "Jawab Shikwa", "Hassan Haider", 2022, 1300);
-		when(bookRepository.updateBook(eq(1), any())).thenReturn(true);
+		Book book = new Book(1L, "Jawab Shikwa", "Hassan Haider", 2022, 1300);
+		when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 		mvc.perform(put("/books/update/1")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(jsonBook.write(book).getJson()))
 				.andExpect(status().isOk())
 				.andExpect(content().string("Book successfully updated!"));
 
-		when(bookRepository.updateBook(eq(2), any())).thenReturn(false);
+		// when(bookRepository.updateBook(eq(2), any())).thenReturn(false);
 		mvc.perform(put("/books/update/2")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(jsonBook.write(book).getJson()))
@@ -112,15 +118,15 @@ class BookServiceApplicationTests {
 	// display details of that book.
 	@Test
 	public void canGetBookById() throws Exception {
-		Book book = new Book(506, "Zakoota Jin", "Kamran Zahid", 2020, 56);
-		when(bookRepository.getBookById(506)).thenReturn(book);
+		Book book = new Book(506L, "Zakoota Jin", "Kamran Zahid", 2020, 56);
+		when(bookRepository.findById(506L)).thenReturn(Optional.of(book));
 		mvc.perform(get("/books/506")
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(content().json(jsonBook.write(book).getJson()));
 
 		Book emptyBook = new Book();
-		when(bookRepository.getBookById(6)).thenReturn(emptyBook);
+		when(bookRepository.findById(6L)).thenReturn(Optional.empty());
 		mvc.perform(get("/books/6")
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound())
