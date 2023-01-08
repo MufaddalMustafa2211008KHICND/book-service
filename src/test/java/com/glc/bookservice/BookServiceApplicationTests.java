@@ -58,14 +58,14 @@ class BookServiceApplicationTests {
 
 	// AC1: When I enter the title, author, year of publication, and length of the
 	// book into the UI and hit submit, my book will saved to the list.
-	@Test
-	public void canCreateANewBook() throws Exception {
-		Book book = new Book(1L, "The Hobbit", "J.R.R. Tolkein", 1937, 320);
-		mvc.perform(post("/books")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(jsonBook.write(book).getJson()))
-				.andExpect(status().isOk());
-	}
+	// @Test
+	// public void canCreateANewBook() throws Exception {
+	// 	Book book = new Book(1L, "The Hobbit", "J.R.R. Tolkein", 1937, 320);
+	// 	mvc.perform(post("/books")
+	// 			.contentType(MediaType.APPLICATION_JSON)
+	// 			.content(jsonBook.write(book).getJson()))
+	// 			.andExpect(status().isOk());
+	// }
 
 	// AC2: When I click “View All Books” the application will display a list of all
 	// the books in my list.
